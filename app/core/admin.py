@@ -12,6 +12,21 @@ class UserAdmin(BaseUserAdmin):
     """Define the admin pages for user."""
     ordering = ['id']
     list_display = ['username']
+    fieldsets = (
+        (None, {'fields': ('username', 'password')}),
+        (('Personal info'), {'fields': ('email',)}),
+        (
+            ('Permissions'), {
+                'fields': (
+                    'is_active',
+                    'is_staff',
+                    'is_superuser',
+                )
+                }
+        ),
+        (('Important dates'), {'fields': ('last_login', 'date_joined')})
+    )
+    readonly_fields = ['last_login', 'date_joined']
 
 if admin.site.is_registered(User):
     admin.site.unregister(User)
