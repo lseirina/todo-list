@@ -25,3 +25,24 @@ class PublicUserTest(TestCase):
         self.assertEqual(res.status_code, 201)
         user = User.objects.get(username=payload['username'])
         self.assertTrue(user.check_password, payload['password'])
+
+    def test_create_user_bad_credentials(self):
+        """Test creating user with blank name is error."""
+        payload = {
+            'username': '',
+            'password': 'test123',
+        }
+        res = self.client.post(CREATE_USER_URL, payload)
+
+        self.assertequal(res.status_code, 400)
+
+    def test_create_user_blank_password(self):
+        """Test creating user with blank password is error."""
+        payload = {
+            'username': 'Test Name',
+            'password': '',
+        }
+
+        res = self.client.post(CREATE_USER_URL, payload)
+
+        self.assertEqual(res.status_code, 400)
