@@ -7,5 +7,7 @@ from user import views
 app_name = 'user'
 
 urlpatterns = [
-    path('create/', views.register_view, name='create')
+    path('create/', views.register_view, name='create'),
+    path('login/', views.login_view, name='login'),
+    path('hom/', views.hom_view, name='home')
 ]
