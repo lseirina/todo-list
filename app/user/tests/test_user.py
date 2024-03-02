@@ -24,9 +24,9 @@ class PublicUserTest(TestCase):
          }
         res = self.client.post(CREATE_USER_URL, payload)
 
-        self.assertEqual(res.status_code, 201)
+        self.assertRedirects(res, LOGIN_URL, follow=True)
         user = User.objects.get(username=payload['username'])
-        self.assertTrue(user.check_password, payload['password'])
+        self.assertTrue(user.check_password(payload['password']))
 
     def test_create_user_bad_credentials(self):
         """Test creating user with blank name is error."""
@@ -34,9 +34,9 @@ class PublicUserTest(TestCase):
             'username': '',
             'password': 'test123',
         }
-        res = self.client.post(CREATE_USER_URL, payload)
+        res = self.client.post(CREATE_USER_URL, payload, follow=True)
 
-        self.assertequal(res.status_code, 400)
+        self.assertRedirects(res, CREATE_USER_URL)
 
     def test_create_user_blank_password(self):
         """Test creating user with blank password is error."""
@@ -45,9 +45,9 @@ class PublicUserTest(TestCase):
             'password': '',
         }
 
-        res = self.client.post(CREATE_USER_URL, payload)
+        res = self.client.post(CREATE_USER_URL, payload, follow=True)
 
-        self.assertEqual(res.status_code, 400)
+        self.assertRedirects(res, CREATE_USER_URL)
 
     def test_login_user_success(self):
         """Tests user login is successful."""
