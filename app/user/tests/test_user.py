@@ -7,6 +7,8 @@ from django.contrib.auth.models import User
 from django.test import Client
 
 CREATE_USER_URL = reverse('user:create')
+LOGIN_URL = reverse('user:login')
+HOME_URL = reverse('home')
 
 class PublicUserTest(TestCase):
     """Tests for not registrated user."""
@@ -46,3 +48,15 @@ class PublicUserTest(TestCase):
         res = self.client.post(CREATE_USER_URL, payload)
 
         self.assertEqual(res.status_code, 400)
+
+    def test_login_user_success(self):
+        """Tests user login is successful."""
+        payload = {
+            'username': 'Testuser',
+            'password': 'testpass123',
+        }
+        res = self.client.post(LOGIN_URL, payload, follow=True)
+
+        self.assertRedirects(res, HOME_URL)
+
+
