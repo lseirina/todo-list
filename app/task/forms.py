@@ -5,7 +5,7 @@ from core.models import Task
 class TaskForm(forms.ModelForm):
     class Meta:
         model = Task
-        fields = ['id', 'name']
+        fields = ['id', 'title']
         read_only_fields = ['id']
 
 class TaskDetailForm(TaskForm):

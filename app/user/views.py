@@ -23,15 +23,19 @@ def login_view(request):
     """Generate login for user."""
     if request.method == 'POST':
         form = AuthenticationForm(request, request.POST)
-        if form.is_valid:
-            user = form.get_user()
-            login(request, user)
-            return redirect('home')
+        if form.is_valid():
+            username = form.cleaned_data['username']
+            password = form.cleaed_data['password']
+            user = authenticate(request, username=username, password=password)
+            if user is not None:
+                login(request, user)
+                return redirect('home')
 
+            else:
+                return render(request, 'login.html', {'form': form, 'error message': 'invalid username or password'})
     else:
         form = AuthenticationForm()
-        render(request, 'login.html', {'form': form})
-
+    return render(request, 'login.html', {'form': form})
 
 def home_view(request):
     """Send authenticated user to home page."""

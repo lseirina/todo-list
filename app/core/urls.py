@@ -4,6 +4,6 @@ from core import views
 
 name_app ='core'
 
-urlpattern = [
-    path('', views.homw_view, name='home')
+urlpatterns = [
+    path('', views.home_view, name='home')
 ]
