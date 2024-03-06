@@ -11,7 +11,7 @@ from django.shortcuts import render, redirect
 def register_view(request):
     """Generate form for user registration."""
     if request.method == 'POST':
-        form = UserCreationForm(request, request.POST)
+        form = UserCreationForm(request.POST)
         if form.is_valid():
             form.save()
             return redirect('login')
@@ -30,7 +30,6 @@ def login_view(request):
             if user is not None:
                 login(request, user)
                 return redirect('home')
-
             else:
                 return render(request, 'login.html', {'form': form, 'error message': 'invalid username or password'})
     else:
