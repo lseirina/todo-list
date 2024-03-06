@@ -33,28 +33,33 @@ class PublicUserTest(TestCase):
         """Test creating user with blank name is error."""
         payload = {
             'username': '',
-            'password': 'test123',
+            'password1': 'test123',
             'password2': 'testpass123',
         }
         res = self.client.post(REGISTER_URL, payload)
-        self.assertRedirects(res, REGISTER_URL)
+
+        self.assertFals(res.context['form'].is_valid())
+        self.assertContains(res, 'This field is required')
 
     def test_create_user_blank_password(self):
         """Test creating user with blank password is error."""
         payload = {
             'username': 'Test Name',
-            'password': '',
+            'password1': '',
+            'password2': '',
         }
 
-        res = self.client.post(REGISTER_URL, payload, follow=True)
+        res = self.client.post(REGISTER_URL, payload)
 
-        self.assertRedirects(res, REGISTER_URL)
+        self.assertFalse(res.context['form'].is_valid())
+        self.assertContains(res, 'This field is required')
 
     def test_login_user_success(self):
         """Tests user login is successful."""
         payload = {
             'username': 'Testuser',
-            'password': 'testpass123',
+            'password1': 'testpass123',
+            'password2': 'testpass123',
         }
         res = self.client.post(LOGIN_URL, payload, follow=True)
 
