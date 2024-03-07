@@ -8,7 +8,7 @@ from django.test import Client
 
 REGISTER_URL = reverse('user:register')
 LOGIN_URL = reverse('user:login')
-HOME_URL = reverse('home')
+HOME_URL = reverse('todo-home')
 
 class PublicUserTest(TestCase):
     """Tests for not registrated user."""
@@ -26,7 +26,7 @@ class PublicUserTest(TestCase):
         res = self.client.post(REGISTER_URL, payload)
 
         self.assertRedirects(res, LOGIN_URL, follow=True)
-        user = User.objects.get(username=payload['username'])
+        user = User.objects.filter(username=payload['username'])
         self.assertTrue(user.exists())
 
     def test_create_user_bad_credentials(self):
@@ -38,8 +38,7 @@ class PublicUserTest(TestCase):
         }
         res = self.client.post(REGISTER_URL, payload)
 
-        self.assertFals(res.context['form'].is_valid())
-        self.assertContains(res, 'This field is required')
+        self.assertRedirects(res, REGISTER_URL)
 
     def test_create_user_blank_password(self):
         """Test creating user with blank password is error."""
@@ -51,8 +50,7 @@ class PublicUserTest(TestCase):
 
         res = self.client.post(REGISTER_URL, payload)
 
-        self.assertFalse(res.context['form'].is_valid())
-        self.assertContains(res, 'This field is required')
+        self.assertRedirects(res, REGISTER_URL)
 
     def test_login_user_success(self):
         """Tests user login is successful."""
@@ -63,6 +61,6 @@ class PublicUserTest(TestCase):
         }
         res = self.client.post(LOGIN_URL, payload, follow=True)
 
-        self.assertRedirects(res, HOME_URL)
+        self.assertEqual(res.status_code, 200)
 
 

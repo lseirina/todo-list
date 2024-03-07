@@ -5,5 +5,5 @@ from core import views
 name_app ='core'
 
 urlpatterns = [
-    path('', views.home_view, name='home')
+    path('', views.home_view, name='todo-home')
 ]
