@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to your todo list.</title>
+</head>
+<body>
+    <header>
+        <h1>Welcome to your todo class.</h1>
+    </header>
+    <nav>
+        <ul>
+            <li><a href="{% url 'todo-home' %}">Home</a></li>
+            <li><a href="{% url 'user:register' %}">Register</a></li>
+            <li><a href="{% url 'user:login' %}">Login</a></li>
+        </ul>
+    </nav>
+    <!--<main>
+        <h2>Tasks</h2>
+        <ul>
+            {% for task in tasks%}
+            <li>{{ task.title }}</li>
+            {% endfor %}
+        </ul>
+    </main>-->
+    <footer>
+        <p>&copy; 2024 Your Todo List</p>
+    </footer>
+</body>
+</html>
+

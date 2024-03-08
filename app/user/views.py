@@ -1,6 +1,7 @@
 """
 Views for user.
 """
+from django.http import HttpResponse
 from django.contrib import messages
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.forms import (
@@ -16,9 +17,12 @@ def register_view(request):
         if form.is_valid():
             form.save()
             messages.success(request, 'User registered successfully. Please log in')
-            return redirect('login')
+            return redirect('user:login')
         else:
-            messages.error(request, 'Unable to authenticate with provided credentials')
+            for field, errors in form.errors.items():
+                for error in errors:
+                    messages.error(request, f'Error in {field}: {error}')
+            return render(request, 'register.html', {'form': form})
     else:
         form = UserCreationForm()
         return render(request, 'register.html', {'form': form})
@@ -29,10 +33,11 @@ def login_view(request):
         form = AuthenticationForm(request, request.POST)
         if form.is_valid():
             username = form.cleaned_data['username']
-            password = form.cleaed_data['password']
+            password = form.cleaned_data['password']
             user = authenticate(request, username=username, password=password)
             if user is not None:
                 login(request, user)
+                #return HttpResponse('hello')
                 return redirect('todo-home')
             else:
                 return render(request, 'login.html', {'form': form, 'error message': 'invalid username or password'})

@@ -23,9 +23,9 @@ class PublicUserTest(TestCase):
              'password1': 'testpass123',
              'password2': 'testpass123',
          }
-        res = self.client.post(REGISTER_URL, payload)
+        res = self.client.post(REGISTER_URL, payload, follow=True)
 
-        self.assertRedirects(res, LOGIN_URL, follow=True)
+        self.assertRedirects(res, LOGIN_URL)
         user = User.objects.filter(username=payload['username'])
         self.assertTrue(user.exists())
 
