@@ -37,7 +37,6 @@ def login_view(request):
             user = authenticate(request, username=username, password=password)
             if user is not None:
                 login(request, user)
-                #return HttpResponse('hello')
                 return redirect('todo-home')
             else:
                 return render(request, 'login.html', {'form': form, 'error message': 'invalid username or password'})
