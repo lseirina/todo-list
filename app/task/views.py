@@ -16,20 +16,31 @@ def task_detail(request, task_id):
     task = get_object_or_404(Task, id=task_id)
     return render(request, 'task_detail.html', {'task': task})
 
-def task_create(request, pk):
+def task_create(request):
+    if request.method == 'POST':
+        form = TaskDetailForm(request.POST)
+        if form.is_valid():
+            task = form.save()
+            messages.success(request, 'The task is created.')
+            return redirect('task-detail', task_id=task.id)
+    else:
+        form = TaskDetailForm()
+    return render(request, 'task_detail.html', {'from': form})
+
+def task_update(request, pk):
     """Create a new task."""
     task = get_object_or_404(Task, pk=pk)
     if request.method == 'POST':
-        form = TaskDetailForm(request.PORT, instance=task)
+        form = TaskDetailForm(request.POST, instance=task)
         if form.is_valid():
             form.save()
-            messages.success(request, 'A new task created.')
-            return redirect(request, 'task-list')
+            messages.success(request, 'The task is chenged.')
+            return redirect('task-list')
         else:
             for field, errors in form.errors.items():
                 for error in errors:
                     messages.error(request, f'Error: {error} in {field}')
-                    return redirect(request, 'task_update', {'form': form})
+                    return redirect('task_update', pk=pk)
     else:
         form = TaskDetailForm(instance=task)
     return render(request, 'task_create.html', {'form': form})
@@ -40,7 +51,7 @@ def task_delete(request, pk):
     if request.method == 'POST':
         task.delete()
         return redirect('task-list')
-    return render(request, 'rask_delete.html', {'task': task})
+    return render(request, 'task_delete.html', {'task': task})
 
 
 
