@@ -32,6 +32,7 @@ if admin.site.is_registered(User):
     admin.site.unregister(User)
 
 admin.site.register(User, UserAdmin)
+admin.site.register(models.Task)
 
 
 

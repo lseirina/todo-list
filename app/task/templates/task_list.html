@@ -8,8 +8,8 @@
 <body>
     <h1>Task List</h1>
     <ul>
-        {% for task in tasks %}
-        <li>{{ task.title }}</li>
+        {% for title in titles %}
+        <li>{{ title }}</li>
         {% empty %}
         <li>No tasks available.</li>
         {% endfor %}
