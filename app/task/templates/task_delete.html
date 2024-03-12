@@ -1,0 +1,37 @@
+<DOCTYPE! html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delete Task</title>
+<body>
+    <h1>Delet Task</h1>
+    <p>Are you sure you want to delete the task?</p>
+    <p><strong>Title</strong>{{ task.title }}</p>
+    <p><strong>Description</strong>{{ task.description }}</p>
+    <form method='post'>
+        {% scrf_token %}
+        <button type='submit'>Delete</button>
+    </form>
+</body>
+</head>
+</html>
+
+<!--<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delete Task</title>
+</head>
+<body>
+    <h1>Delete Task</h1>
+    <p>Are you sure you want to delete the following task?</p>
+    <p><strong>Title:</strong> {{ task.title }}</p>
+    <p><strong>Description:</strong> {{ task.description }}</p>
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit">Delete</button>
+    </form>
+</body>
+</html>-->>
