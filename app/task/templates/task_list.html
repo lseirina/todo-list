@@ -8,8 +8,12 @@
 <body>
     <h1>Task List</h1>
     <ul>
-        {% for title in titles %}
-        <li>{{ title }}</li>
+        {% for task in tasks %}
+        <nav>
+            <ul>
+                <li><a href="{% url 'task:task-detail' task.id %}">{{ task.title }}</a></li>
+            </ul>
+        </nav>
         {% empty %}
         <li>No tasks available.</li>
         {% endfor %}

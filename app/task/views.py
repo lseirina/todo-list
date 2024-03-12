@@ -1,15 +1,16 @@
 """Views for tasks."""
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 
 from task.forms import TaskForm, TaskDetailForm
 from core.models import Task
 
+@login_required
 def task_list(request):
     """Retrieve the list of tasks."""
-    tasks = Task.objects.all()
-    titles = [ task.title for task in tasks]
-    return render(request, 'task_list.html', {'titles': titles})
+    tasks = Task.objects.filter(user=request.user).order_by('-id')
+    return render(request, 'task_list.html', {'tasks': tasks})
 
 def task_detail(request, task_id):
     """Retrieve task with description."""
