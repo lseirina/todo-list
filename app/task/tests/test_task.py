@@ -13,7 +13,7 @@ def create_user(**params):
 
 def create_task(user, **params):
     """Create a new task."""
-    defaults = {'name': 'Task1'}
+    defaults = {'title': 'Task1'}
     defaults.update(params)
 
     task = Task.objects.create(user=user, **defaults)
@@ -30,7 +30,7 @@ class PublicTaskTests(TestCase):
         url = reverse('task:tasks-list')
         res = self.client.get(url)
 
-        self.assertEqual(res.status_code, 401)
+        self.assertEqual(res.status_code, 302)
 
 class PrivateTaskTests(TestCase):
     """Test authenticated requests."""
@@ -39,8 +39,7 @@ class PrivateTaskTests(TestCase):
         self.client = Client()
         self.user = create_user(
             username='Testname',
-            password1='testpass123',
-            password2='testpass123',
+            password='testpass123',
         )
         self.client.force_login(self.user)
 
@@ -54,14 +53,13 @@ class PrivateTaskTests(TestCase):
 
         tasks = Task.objects.all().order_by('-id')
         self.assertEqual(res.status_code, 200)
-        self.assertEqual(res.data, tasks.data)
+        self.assertContains(res, tasks.title)
 
     def test_task_limited_to_user(self):
         """Test list of tasks limited to authenticated user."""
         user1 = User.objects.create_user(
             username='Testname2',
-            password1='testpass123',
-            password2='testpass123',
+            password='testpass123',
         )
         task1 = create_task(user=self.user)
         task2 = create_task(user=user1)
@@ -71,17 +69,17 @@ class PrivateTaskTests(TestCase):
 
         task =  Task.objects.filter(user=self.user)
         self.assertEqual(res.status_code, 200)
-        self.assertEqual(res.data, task.data)
+        self.assertContains(res, task.title)
 
     def test_get_task_detail(self):
         """Test get task detail."""
         task = create_task(user=self.user)
 
-        url = reverse('task:task-detail', kwargs={'pk': task.pk})
+        url = reverse('task:task-detail', kwargs={'task_id': task.id})
         res = self.client.get(url)
 
-        self.assertEqual(res.satus_code, 200)
-        self.assertEqual(res.data, task.data)
+        self.assertEqual(res.status_code, 200)
+        self.assertContains(res, task.title)
 
     def test_create_task(self):
         """Test creating a new task."""
@@ -149,4 +147,4 @@ class PrivateTaskTests(TestCase):
         self.assertEqual(res.status_code, 204)
         self.assertFalse(Task.objects.filter(user=self.user).exists())
 
-        
+

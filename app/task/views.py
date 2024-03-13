@@ -17,13 +17,16 @@ def task_detail(request, task_id):
     task = get_object_or_404(Task, id=task_id)
     return render(request, 'task_detail.html', {'task': task})
 
+@login_required
 def task_create(request):
     if request.method == 'POST':
         form = TaskDetailForm(request.POST)
         if form.is_valid():
-            task = form.save()
+            task = form.save(commit=False)
+            task.user = request.user
+            task.save()
             messages.success(request, 'The task is created.')
-            return redirect('task-detail', task_id=task.id)
+            return redirect('task:task-detail', task_id=task.id)
     else:
         form = TaskDetailForm()
     return render(request, 'task_detail.html', {'from': form})
@@ -36,12 +39,12 @@ def task_update(request, pk):
         if form.is_valid():
             form.save()
             messages.success(request, 'The task is changed.')
-            return redirect('task-list')
+            return redirect('task:tasks-list')
         else:
             for field, errors in form.errors.items():
                 for error in errors:
                     messages.error(request, f'Error: {error} in {field}')
-                    return redirect('task_update', pk=pk)
+                    return redirect('task:task-update', pk=pk)
     else:
         form = TaskDetailForm(instance=task)
     return render(request, 'task_create.html', {'form': form})
@@ -51,7 +54,7 @@ def task_delete(request, pk):
     task = get_object_or_404(Task, pk=pk)
     if request.method == 'POST':
         task.delete()
-        return redirect('task-list')
+        return redirect('task:tasks-list')
     return render(request, 'task_delete.html', {'task': task})
 
 
