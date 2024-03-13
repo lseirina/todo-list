@@ -73,3 +73,66 @@ class PrivateTaskTests(TestCase):
         task =  Task.objects.filter(user=self.user)
         self.assertEqual(res.status_code, 200)
         self.assertEqual(res.data, task.data)
+
+    def test_get_task_detail(self):
+        """Test get task detail."""
+        task = create_task(user=self.user)
+        url = detail_url(task.id)
+
+        res = self.client.get(url)
+
+        self.assertEqual(res.satus_code, 200)
+        self.assertEqual(res.data, task.data)
+
+    def test_create_task(self):
+        """Test creating a new task."""
+        payload = {
+            'title': 'Hard task',
+            'description': 'Do this.',
+        }
+        res = self.client.post(TASKS_URL, payload)
+
+        self.assertEqual(res.status_code, 201)
+        task = Task.objects.get(id=res.data[id])
+        for k, v in payload.items():
+            self.assertEqual(getattr(task, k), v)
+        self.assertEqual(task.user, self.user)
+
+    def test_partial_update(self):
+        """Test partial update of the task."""
+        original_title = 'Easy task.'
+        task = create_task(
+            user=self.user,
+            title=original_title,
+            description='Do that.'
+        )
+        payload = {'description': 'Do this.'}
+
+        url = detail_url(task.id)
+        res = self.client.post(url, payload)
+
+        self.assertEqual(res.status_code, 200)
+        task.refresh_from_db()
+        self.assertEqual(task.user, self.user)
+        self.assertEqual(task.title, original_title)
+        self.assetrtEqual(task.description, payload['description'])
+
+    def test_full_update(self):
+        """Test ful update of the task."""
+        task = create_task(
+            title='One more task.',
+            description='Do it.',
+        )
+        payload = {
+            'title': 'New Task',
+            'description': 'Do it again.',
+        }
+
+        url = detail_url(task.id)
+        res = self.client.post(url, payload)
+
+        self.assertEqual(res.status_code, 200)
+        task.refresh_from_db()
+        for k, v in payload.items():
+            self.assertEqual(getattr(task, k), v)
+        self.assertEqual(task.user, self.user)

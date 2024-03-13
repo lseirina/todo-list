@@ -35,7 +35,7 @@ def task_update(request, pk):
         form = TaskDetailForm(request.POST, instance=task)
         if form.is_valid():
             form.save()
-            messages.success(request, 'The task is chenged.')
+            messages.success(request, 'The task is changed.')
             return redirect('task-list')
         else:
             for field, errors in form.errors.items():
