@@ -6,11 +6,6 @@ from django.contrib.auth.models import User
 
 from core.models import Task
 
-TASKS_URL = reverse('task:task-list')
-
-def detail_url(task_id):
-    """Url for task detail."""
-    return reverse('task:tas-detail', args=[task_id])
 
 def create_user(**params):
     """Create and retuen a new user."""
@@ -32,7 +27,8 @@ class PublicTaskTests(TestCase):
 
     def test_auth_required(self):
         """Test auth required to call web."""
-        res = self.client.get(TASKS_URL)
+        url = reverse('task:tasks-list')
+        res = self.client.get(url)
 
         self.assertEqual(res.status_code, 401)
 
@@ -52,7 +48,9 @@ class PrivateTaskTests(TestCase):
         """Test retrieving a list of tasks."""
         create_task(user=self.user)
         create_task(user=self.user)
-        res = self.client.get(TASKS_URL)
+
+        url = reverse('task:tasks-list')
+        res = self.client.get(url)
 
         tasks = Task.objects.all().order_by('-id')
         self.assertEqual(res.status_code, 200)
@@ -68,7 +66,8 @@ class PrivateTaskTests(TestCase):
         task1 = create_task(user=self.user)
         task2 = create_task(user=user1)
 
-        res = self.client.get(TASKS_URL)
+        url = reverse('task:tasks-list')
+        res = self.client.get(url)
 
         task =  Task.objects.filter(user=self.user)
         self.assertEqual(res.status_code, 200)
@@ -77,8 +76,8 @@ class PrivateTaskTests(TestCase):
     def test_get_task_detail(self):
         """Test get task detail."""
         task = create_task(user=self.user)
-        url = detail_url(task.id)
 
+        url = reverse('task:task-detail', kwargs={'pk': task.pk})
         res = self.client.get(url)
 
         self.assertEqual(res.satus_code, 200)
@@ -90,7 +89,9 @@ class PrivateTaskTests(TestCase):
             'title': 'Hard task',
             'description': 'Do this.',
         }
-        res = self.client.post(TASKS_URL, payload)
+
+        url = reverse('task:task-create')
+        res = self.client.post(url, payload)
 
         self.assertEqual(res.status_code, 201)
         task = Task.objects.get(id=res.data[id])
@@ -108,7 +109,7 @@ class PrivateTaskTests(TestCase):
         )
         payload = {'description': 'Do this.'}
 
-        url = detail_url(task.id)
+        url = reverse('task:task-update', kwargs={'pk': task.pk})
         res = self.client.post(url, payload)
 
         self.assertEqual(res.status_code, 200)
@@ -120,6 +121,7 @@ class PrivateTaskTests(TestCase):
     def test_full_update(self):
         """Test ful update of the task."""
         task = create_task(
+            user=self.user,
             title='One more task.',
             description='Do it.',
         )
@@ -128,7 +130,7 @@ class PrivateTaskTests(TestCase):
             'description': 'Do it again.',
         }
 
-        url = detail_url(task.id)
+        url = reverse('task:task-update', kwargs={'pk': task.pk})
         res = self.client.post(url, payload)
 
         self.assertEqual(res.status_code, 200)
@@ -136,3 +138,15 @@ class PrivateTaskTests(TestCase):
         for k, v in payload.items():
             self.assertEqual(getattr(task, k), v)
         self.assertEqual(task.user, self.user)
+
+    def test_delete_task(self):
+        """Test delete task."""
+        task = create_task(user=self.user)
+
+        url = reverse('task:task-delete', kwargs={'pk': task.pk})
+        res = self.client.post(url)
+
+        self.assertEqual(res.status_code, 204)
+        self.assertFalse(Task.objects.filter(user=self.user).exists())
+
+        
