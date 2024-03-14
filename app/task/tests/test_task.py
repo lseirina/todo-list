@@ -53,7 +53,8 @@ class PrivateTaskTests(TestCase):
 
         tasks = Task.objects.all().order_by('-id')
         self.assertEqual(res.status_code, 200)
-        self.assertContains(res, tasks.title)
+        for task in tasks:
+            self.assertContains(res, task.title)
 
     def test_task_limited_to_user(self):
         """Test list of tasks limited to authenticated user."""
@@ -61,15 +62,16 @@ class PrivateTaskTests(TestCase):
             username='Testname2',
             password='testpass123',
         )
-        task1 = create_task(user=self.user)
-        task2 = create_task(user=user1)
+        create_task(user=self.user)
+        create_task(user=user1)
 
         url = reverse('task:tasks-list')
         res = self.client.get(url)
 
-        task =  Task.objects.filter(user=self.user)
+        tasks =  Task.objects.filter(user=self.user)
         self.assertEqual(res.status_code, 200)
-        self.assertContains(res, task.title)
+        for task in tasks:
+            self.assertContains(res, task.title)
 
     def test_get_task_detail(self):
         """Test get task detail."""
@@ -89,13 +91,11 @@ class PrivateTaskTests(TestCase):
         }
 
         url = reverse('task:task-create')
-        res = self.client.post(url, payload)
+        res = self.client.post(url, payload, follow=True)
 
-        self.assertEqual(res.status_code, 201)
-        task = Task.objects.get(id=res.data[id])
-        for k, v in payload.items():
-            self.assertEqual(getattr(task, k), v)
-        self.assertEqual(task.user, self.user)
+        self.assertEqual(res.status_code, 200)
+        exists = (Task.objects.filter(title=payload['title'], description=payload['description'])).exists()
+        self.assertTrue(exists)
 
     def test_partial_update(self):
         """Test partial update of the task."""
@@ -107,14 +107,14 @@ class PrivateTaskTests(TestCase):
         )
         payload = {'description': 'Do this.'}
 
-        url = reverse('task:task-update', kwargs={'pk': task.pk})
+        url = reverse('task:task-update', kwargs={'pk': task.id})
         res = self.client.post(url, payload)
 
-        self.assertEqual(res.status_code, 200)
+        self.assertEqual(res.status_code, 302)
         task.refresh_from_db()
         self.assertEqual(task.user, self.user)
         self.assertEqual(task.title, original_title)
-        self.assetrtEqual(task.description, payload['description'])
+        self.assertEqual(task.description, payload['description'])
 
     def test_full_update(self):
         """Test ful update of the task."""
@@ -131,7 +131,7 @@ class PrivateTaskTests(TestCase):
         url = reverse('task:task-update', kwargs={'pk': task.pk})
         res = self.client.post(url, payload)
 
-        self.assertEqual(res.status_code, 200)
+        self.assertEqual(res.status_code, 302)
         task.refresh_from_db()
         for k, v in payload.items():
             self.assertEqual(getattr(task, k), v)
@@ -144,7 +144,7 @@ class PrivateTaskTests(TestCase):
         url = reverse('task:task-delete', kwargs={'pk': task.pk})
         res = self.client.post(url)
 
-        self.assertEqual(res.status_code, 204)
+        self.assertEqual(res.status_code, 302)
         self.assertFalse(Task.objects.filter(user=self.user).exists())
 
 

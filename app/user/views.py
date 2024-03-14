@@ -22,10 +22,10 @@ def register_view(request):
             for field, errors in form.errors.items():
                 for error in errors:
                     messages.error(request, f'Error in {field}: {error}')
-            return render(request, 'register.html', {'form': form})
+            return redirect('user:register')
     else:
         form = UserCreationForm()
-        return render(request, 'register.html', {'form': form})
+    return render(request, 'register.html', {'form': form})
 
 def login_view(request):
     """Generate login for user."""

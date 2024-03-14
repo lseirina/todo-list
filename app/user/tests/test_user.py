@@ -20,8 +20,7 @@ class PublicUserTest(TestCase):
         """Test to create user is successfull."""
         payload = {
              'username': 'Test Name',
-             'password1': 'testpass123',
-             'password2': 'testpass123',
+             'password': 'testpass123',
          }
         res = self.client.post(REGISTER_URL, payload, follow=True)
 
@@ -36,7 +35,7 @@ class PublicUserTest(TestCase):
             'password1': 'test123',
             'password2': 'testpass123',
         }
-        res = self.client.post(REGISTER_URL, payload)
+        res = self.client.post(REGISTER_URL, payload, follow=True)
 
         self.assertRedirects(res, REGISTER_URL)
 
@@ -48,7 +47,7 @@ class PublicUserTest(TestCase):
             'password2': '',
         }
 
-        res = self.client.post(REGISTER_URL, payload)
+        res = self.client.post(REGISTER_URL, payload, follow=True)
 
         self.assertRedirects(res, REGISTER_URL)
 

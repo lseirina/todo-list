@@ -2,6 +2,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.http import HttpResponseForbidden
 
 from task.forms import TaskForm, TaskDetailForm
 from core.models import Task
@@ -29,7 +30,7 @@ def task_create(request):
             return redirect('task:task-detail', task_id=task.id)
     else:
         form = TaskDetailForm()
-    return render(request, 'task_detail.html', {'from': form})
+    return render(request, 'task_create.html', {'form': form})
 
 def task_update(request, pk):
     """Create a new task."""
@@ -47,11 +48,13 @@ def task_update(request, pk):
                     return redirect('task:task-update', pk=pk)
     else:
         form = TaskDetailForm(instance=task)
-    return render(request, 'task_create.html', {'form': form})
-
+    return render(request, 'task_update.html', {'form': form})
+@login_required
 def task_delete(request, pk):
     """Delete task."""
     task = get_object_or_404(Task, pk=pk)
+    if task.user != request.user:
+        return HttpResponseForbidden('You don`t have permition to delete this task.')
     if request.method == 'POST':
         task.delete()
         return redirect('task:tasks-list')

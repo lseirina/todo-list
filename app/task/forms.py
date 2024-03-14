@@ -9,6 +9,6 @@ class TaskForm(forms.ModelForm):
         read_only_fields = ['id']
 
 class TaskDetailForm(TaskForm):
-    class meta(TaskForm.Meta):
+    class Meta(TaskForm.Meta):
         fields = TaskForm.Meta.fields + ['description']
 
