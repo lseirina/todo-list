@@ -10,7 +10,7 @@
     <p><strong>Title</strong>{{ task.title }}</p>
     <p><strong>Description</strong>{{ task.description }}</p>
     <form method='post'>
-        {% scrf_token %}
+        {% csrf_token %}
         <button type='submit'>Delete</button>
     </form>
 </body>

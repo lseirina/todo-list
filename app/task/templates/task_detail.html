@@ -9,5 +9,12 @@
     <h1>Task Description</h1>
     <p><strong>Title: </strong>{{ task.title }}</p>
     <p><strong>Description: </strong>{{ task.description }}</p>
+    <form action="{% url 'task:task-update' pk=task.id %}" method='get'>
+        <button type=submit>Update</button>
+    </form>
+    <form action="{% url 'task:task-delete' pk=task.id %}" method='get'>
+        <button type=submit>Delete</button>
+    </form>
+
 </body>
 </html>

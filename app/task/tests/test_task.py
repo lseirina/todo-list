@@ -105,9 +105,9 @@ class PrivateTaskTests(TestCase):
             title=original_title,
             description='Do that.'
         )
-        payload = {'description': 'Do this.'}
+        payload = {'description': 'Do this'}
 
-        url = reverse('task:task-update', kwargs={'pk': task.id})
+        url = reverse('task:task-update', kwargs={'pk': task.pk})
         res = self.client.post(url, payload)
 
         self.assertEqual(res.status_code, 302)
